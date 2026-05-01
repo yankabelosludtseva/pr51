@@ -48,5 +48,21 @@ namespace пр51
             for (int i = 1; i < 20; i++)
                 Parent.Children.Add(new Elements.Room(i));
         }
+
+        private void ReportPDF(object sender, RoutedEventArgs e)
+        {
+            // Создаём файловый диалог
+            SaveFileDialog sfd = new SaveFileDialog();
+            // Указываем формат файла
+            sfd.Filter = "PDF (*.pdf)|*.pdf";
+            // Открываем файловый диалог
+            sfd.ShowDialog();
+            // Если было выбрано имя
+            if (sfd.FileName != "")
+            {
+                // Создаём отчёт
+                OwnerContext.ReportPDF(sfd.FileName);
+            }
+        }
     }
 }
