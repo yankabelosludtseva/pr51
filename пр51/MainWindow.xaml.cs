@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using пр51.Context;
 
 namespace пр51
 {
@@ -23,6 +25,27 @@ namespace пр51
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Report(object sender, RoutedEventArgs e)
+        {
+            // Создаём файловый диалог
+            SaveFileDialog sfd = new SaveFileDialog();
+            // Указываем формат файла
+            sfd.Filter = "Word Files (*.docx)|*.docx";
+            // Открываем файловый диалог
+            sfd.ShowDialog();
+            // Если было выбрано имя
+            if (sfd.FileName != "")
+            {
+                // Создаём отчёт
+                OwnerContext.Report(sfd.FileName);
+            }
+        }
+        public void LoadRooms()
+        {
+            for (int i = 1; i < 20; i++)
+                Parent.Children.Add(new Elements.Room(i));
         }
     }
 }
