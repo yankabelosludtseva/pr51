@@ -197,7 +197,7 @@ namespace пр51.Context
             gfx.DrawRectangle(new XSolidBrush(XColors.LightGray), MarginLeft + (Width + 10) * 2, MarginTop + 100, Width, 20);
             gfx.DrawRectangle(new XSolidBrush(XColors.LightGray), MarginLeft + (Width + 10) * 3, MarginTop + 100, Width, 20);
             // Вставляем текст на места ячеек
-            gfx.DrawString("№" + AllOwners().Count, font, XBrushes.Black,
+            gfx.DrawString("№", font, XBrushes.Black,
                 new XRect(MarginLeft, MarginTop + 100, Width, 20),
                 XStringFormats.Center);
 
