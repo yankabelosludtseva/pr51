@@ -1,5 +1,10 @@
-﻿using пр51.Models;
+﻿using PdfSharp.Drawing;
+using PdfSharp.Drawing;
+using PdfSharp.Pdf;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using пр51.Models;
 using Word = Microsoft.Office.Interop.Word;
 
 namespace пр51.Context
@@ -146,6 +151,104 @@ namespace пр51.Context
             Cell.Text = Text;
             // Указываем положение текста в ячейке
             Cell.ParagraphFormat.Alignment = Alignment;
+        }
+
+        /// <summary>
+        /// Генерация отчёта PDF
+        /// </summary>
+        /// <param name="fileName">Наименование файла</param>
+        public static void ReportPDF(string fileName)
+        {
+            // Создаём документ PDF
+            PdfDocument document = new PdfDocument();
+            // Указываем заголовок документа
+            document.Info.Title = "Отчёт по жильцам дома";
+            // Добавляем страницу в документ
+            PdfPage page = document.AddPage();
+            // Получаем графику для созданной страницы страницы
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+            // Присваиваем отступ сверху
+            int MarginTop = 20;
+            // Присваиваем отступ слева
+            int MarginLeft = 50;
+            // Задаём используемые шрифты
+            XFont fontHeader = new XFont("Arial", 16);
+            XFont font = new XFont("Arial", 12);
+            // Указываем заголовок
+            gfx.DrawString("Список жильцов дома", fontHeader, XBrushes.Black,
+                new XRect(0, MarginTop, page.Width, 15),
+                XStringFormats.Center);
+
+            // Указываем подзаголовок
+            gfx.DrawString("по адресу: г. Пермь, ул. Луначарского, д. 24", font, XBrushes.Black,
+                new XRect(0, MarginTop + 30, page.Width, 10),
+                XStringFormats.Center);
+
+            // Указываем текст
+            gfx.DrawString("Всего жильцов: " + AllOwners().Count, font, XBrushes.Black,
+                new XRect(MarginLeft, MarginTop + 70, page.Width, 10),
+                XStringFormats.CenterLeft);
+
+            // Расчитываем ширину ячейки в таблице
+            int Width = (Convert.ToInt32(page.Width.Value) - MarginLeft * 2 - 30) / 4;
+            // Рисуем квадраты, которые будут обозначать ячейки таблицы
+            gfx.DrawRectangle(new XSolidBrush(XColors.LightGray), MarginLeft, MarginTop + 100, Width, 20);
+            gfx.DrawRectangle(new XSolidBrush(XColors.LightGray), MarginLeft + Width + 10, MarginTop + 100, Width, 20);
+            gfx.DrawRectangle(new XSolidBrush(XColors.LightGray), MarginLeft + (Width + 10) * 2, MarginTop + 100, Width, 20);
+            gfx.DrawRectangle(new XSolidBrush(XColors.LightGray), MarginLeft + (Width + 10) * 3, MarginTop + 100, Width, 20);
+            // Вставляем текст на места ячеек
+            gfx.DrawString("№" + AllOwners().Count, font, XBrushes.Black,
+                new XRect(MarginLeft, MarginTop + 100, Width, 20),
+                XStringFormats.Center);
+
+            // Вставляем текст на места ячеек
+            gfx.DrawString("Фамилия", font, XBrushes.Black,
+                new XRect(MarginLeft + Width + 10, MarginTop + 100, Width, 20),
+                XStringFormats.Center);
+
+            // Вставляем текст на места ячеек
+            gfx.DrawString("Имя", font, XBrushes.Black,
+                new XRect(MarginLeft + (Width + 10) * 2, MarginTop + 100, Width, 20),
+                XStringFormats.Center);
+
+            // Вставляем текст на места ячеек
+            gfx.DrawString("Отчество", font, XBrushes.Black,
+                new XRect(MarginLeft + (Width + 10) * 3, MarginTop + 100, Width, 20),
+                XStringFormats.Center);
+
+            // Перебираем жильцов квартир
+            for (int i = 0; i < AllOwners().Count; i++)
+            {
+                // Рисуем квадраты, которые будут обозначать ячейки таблицы
+                gfx.DrawRectangle(new XSolidBrush(XColors.LightGray), MarginLeft, MarginTop + 100 + 25 * (i + 1), Width, 20);
+                gfx.DrawRectangle(new XSolidBrush(XColors.LightGray), MarginLeft + Width + 10, MarginTop + 100 + 25 * (i + 1), Width, 20);
+                gfx.DrawRectangle(new XSolidBrush(XColors.LightGray), MarginLeft + (Width + 10) * 2, MarginTop + 100 + 25 * (i + 1), Width, 20);
+                gfx.DrawRectangle(new XSolidBrush(XColors.LightGray), MarginLeft + (Width + 10) * 3, MarginTop + 100 + 25 * (i + 1), Width, 20);
+                // Вставляем текст на места ячеек
+                gfx.DrawString((i + 1).ToString(), font, XBrushes.Black,
+                    new XRect(MarginLeft, MarginTop + 100 + 25 * (i + 1), Width, 20),
+                    XStringFormats.Center);
+
+                // Вставляем текст на места ячеек
+                gfx.DrawString(AllOwners()[i].LastName, font, XBrushes.Black,
+                    new XRect(MarginLeft + Width + 10, MarginTop + 100 + 25 * (i + 1), Width, 20),
+                    XStringFormats.Center);
+
+                // Вставляем текст на места ячеек
+                gfx.DrawString(AllOwners()[i].FirstName, font, XBrushes.Black,
+                    new XRect(MarginLeft + (Width + 10) * 2, MarginTop + 100 + 25 * (i + 1), Width, 20),
+                    XStringFormats.Center);
+
+                // Вставляем текст на места ячеек
+                gfx.DrawString(AllOwners()[i].SurName, font, XBrushes.Black,
+                    new XRect(MarginLeft + (Width + 10) * 3, MarginTop + 100 + 25 * (i + 1), Width, 20),
+                    XStringFormats.Center);
+            }
+
+            // Сохраняем документ
+            document.Save(fileName);
+            // Открываем документ
+            Process.Start(fileName);
         }
     }
 }
